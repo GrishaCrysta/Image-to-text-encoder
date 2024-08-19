@@ -59,31 +59,66 @@ def toText(img : list):
 while True:
     mode = input("What do you want to do?\n1 - code text into the image\n 2 - decode text from the image\n")
     if mode == '1':
-        text = input("Write the text:\t")
+        text = ''
+        modeSet = False
+        while not modeSet:
+            mode = input("Do you want get text from file or write it here?\n1 - write here\n2 - from file\n")
+            if mode == '1' or mode == '2':
+                modeSet = True
+            else:
+                print("Wrong input")
+        if mode == '1':
+            text = input("Write the text: ")
+        else:
+            path = input("Write the path of text file: ")
+            encoding = input("Encoding of the file(press enter, if it's not important): ")
+            file = 0
+            if encoding == '':
+                file = open(path, 'r')
+            else:
+                file = open(path, 'r', encoding=encoding)
+            text = file.read()
+            file.close()
         img = toImg(text)
         notExit = True
         fig, ax = plt.subplots()
         ax.imshow(img)
         while notExit:
-            action = input("What do you want to do with image?\n1 - show it now\n2 - save it into the file\n3 - exit")
+            action = input("What do you want to do with image?\n1 - show image now\n2 - show text now\n3 - save it into the file\n4 - exit\n")
             if action == '1':
                 plt.show()
             elif action == '2':
-                path = input("Write the path, where you want to save it: \t")
+                print(text)
+            elif action == '3':
+                path = input("Write the path, where you want to save it: ")
                 if not os.path.isfile(path):
                     os.mkdir(path)
                 iio.imwrite(path, img)
-            elif action == '3':
+            elif action == '4':
                 notExit = False
             else:
                 print("Wrong input")
     elif mode == '2':
-        path = input("Write the path, where this file: \t")
+        path = input("Write the path, where this file: ")
         img = iio.imread(path)
         text = toText(img)
-        print(text)
-        show = input("Do you want to see it?\n1 - yes\nany other response - no")
-        if show == '1':
-            plt.show()
+        notExit = True
+        while notExit:
+            action = input("What do you want to do?\n1 - show image now\n2 - show text now\n3 - save text in the file\n4 - exit\n")
+            if action == '1':
+                fig, ax = plt.subplots()
+                plt.show()
+            elif action == '2':
+                print(text)
+            elif action == '3':
+                path = input("Write the path, where you want to save it: ")
+                if not os.path.isfile(path):
+                    os.mkdir(path)
+                file = open(path, 'w')
+                file.write(text)
+            elif action == '4':
+                notExit = False
+            else:
+                print("Wrong input")
     else:
         print("Wrong input")
